@@ -9,25 +9,17 @@
 class Solution {
 public:
     ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
-        ListNode* p=l1;
-        ListNode* q=l2;
-        ListNode* newList = new ListNode(INT_MIN);
-        ListNode* ptr=newList;
         
-        while(p && q) {
-            if(p->val < q->val){
-                ptr->next = new ListNode(p->val);
-                p=p->next;
-            } else {
-                ptr->next = new ListNode(q->val); 
-                q=q->next;
-            }
-            ptr=ptr->next;
+        if(l1 == NULL) {
+            return l2;
+        } else if(l2 == NULL) {
+            return l1;
+        } else if(l1->val < l2->val) {
+            l1->next = mergeTwoLists(l1->next, l2);
+            return l1;
+        } else {
+            l2->next = mergeTwoLists(l1, l2->next);
+            return l2;
         }
-        
-        ptr->next=p ? p : q;
-        
-        return newList->next;
-        
-    }
+    } 
 };
