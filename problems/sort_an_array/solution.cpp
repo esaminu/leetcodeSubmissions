@@ -1,36 +1,40 @@
 class Solution {
+    int randomCall = 0;
 public:
     vector<int> sortArray(vector<int>& nums) {
-        mergeSort(nums, 0, nums.size() - 1);
+        quickSort(nums, 0, nums.size() - 1);
         return nums;
     }
-    void mergeSort(vector<int> &nums, int start, int end) {
-        if(start == end) return;
-        int mid = (start + end)/2;
-        mergeSort(nums, start, mid);
-        mergeSort(nums, mid + 1, end);
-        merge(nums, start, mid, end);
+    void quickSort(vector<int> &arr, int low, int high) {
+        if(low < high) {
+            int newIndex = partitionAroundPivot(low, high, getRandomNumber(low, high), arr);
+            quickSort(arr, low, newIndex);
+            quickSort(arr, newIndex + 1, high);
+        }
     }
-    void merge(vector<int>& nums, int l, int m, int h) {
-        // l is first index of first subarray, m is last index of first subarray and h is last index of second subarray
-        int i = l, j = m + 1;
-        vector<int> s;
+    int partitionAroundPivot(int start, int end, int pivotIndex, vector<int> &arr) {
+        // returns final pivot index. start and end inclusive
+        int i = start, j = end, pivot = arr[pivotIndex], currPivotIndex = pivotIndex;
         
-        while(i <= m && j <= h) {
-            if(nums[i] <= nums[j]) {
-                s.push_back(nums[i++]);
+        while(i <= j) {
+            if(arr[i]>= pivot && arr[j] < pivot) {
+                if(i == currPivotIndex) currPivotIndex = j; else if(j == currPivotIndex) currPivotIndex = i;
+                swap(arr[i++], arr[j--]);
                 continue;
             }
-            s.push_back(nums[j++]);
+            if(arr[i] < pivot) {
+                i++;
+            }
+            if(arr[j] >= pivot) {
+                j--;
+            }
         }
-        while(i <= m) {
-            s.push_back(nums[i++]);
-        }
-        while(j <= h) {
-            s.push_back(nums[j++]);
-        }
-        for(int k = l; k <= h; k++) {
-            nums[k] = s[k - l];
-        }
+        swap(arr[currPivotIndex], arr[j + 1]);
+        return j + 1;
+    }
+    int getRandomNumber(int min, int max) {
+        // inclusive
+        srand(randomCall++);
+        return min + (rand() % (max - min + 1));
     }
 };
