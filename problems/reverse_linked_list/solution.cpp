@@ -9,12 +9,12 @@
 class Solution {
 public:
     ListNode* reverseList(ListNode* head) {
-        if(head && head->next){
-            ListNode* List = reverseList(head->next);
-            head->next->next = head;
-            head->next = NULL;
-            return List;
-        }
+       if(head && head->next) {
+           ListNode* currList = reverseList(head->next);
+           head->next->next = head;
+           head->next = NULL;
+           return currList;
+       }
         return head;
     }
 };
