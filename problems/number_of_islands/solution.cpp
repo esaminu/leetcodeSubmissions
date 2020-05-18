@@ -1,73 +1,50 @@
-struct coord {
-    int i;
-    int j;
-};
-
 class Solution {
+private:
+    vector<vector<int>> dirs{{0,1}, {0, -1}, {1,0}, {-1, 0}};
+    bool validateCoords(vector<int>& coords, vector<vector<char>> & grid) {
+        int i = coords[0], j = coords[1];
+        if(i < 0 || i >= grid.size() || j < 0 || j >= grid[0].size() || grid[i][j] == '0') return false;
+        return true;
+    }
 public:
     int numIslands(vector<vector<char>>& grid) {
-        int islands = 0;
-        
-        if(!grid.size() || !grid[0].size()) {
-            return 0;
-        }
-        
-        for(int i=0; i<grid.size(); i++) {
-            for(int j=0; j<grid[0].size(); j++){
+        int count = 0;
+        for(int i = 0; i < grid.size(); i++) {
+            for(int j = 0; j < grid[0].size(); j++) {
                 if(grid[i][j] == '1') {
-                    bfs(i,j,grid);
-                    islands++;
+                    count++;
+                    bfs(grid, i, j);
                 }
             }
         }
-        return islands;
+        return count;
     }
-    
-    char getBelow(coord c, vector<vector<char>>& grid){return c.i < grid.size() - 1 ? grid[c.i+1][c.j] : '0';}
-    char getAbove(coord c, vector<vector<char>>& grid){return c.i != 0 ? grid[c.i-1][c.j] : '0';}
-    char getRight(coord c, vector<vector<char>>& grid){return c.j < grid[0].size() - 1 ? grid[c.i][c.j+1] : '0';}
-    char getLeft(coord c, vector<vector<char>>& grid){return c.j != 0 ? grid[c.i][c.j - 1] : '0';}
-    
-    void bfs(int i, int j, vector<vector<char>>& grid) {
-        std::queue<coord> myqueue;
-        coord c;
-        c.i = i;
-        c.j = j;
-        grid[c.i][c.j] = '0';
-        myqueue.push(c);
-        
-        while(!myqueue.empty()) {
-            coord d = myqueue.front();
-            myqueue.pop();
-            
-            if(getLeft(d,grid) == '1') {
-                c.i = d.i;
-                c.j = d.j - 1;
-                grid[c.i][c.j] = '0';
-                myqueue.push(c);
+    void bfs(vector<vector<char>> & grid, int i, int j) {
+        queue<vector<int>> qu;
+        qu.push({i,j});
+        grid[i][j] = '0';
+        while(qu.size()) {
+            vector<int> curr = qu.front();
+            qu.pop();
+            for(vector<int> dir : dirs) {
+                vector<int> next= goInDir(curr, dir);
+                if(validateCoords(next, grid)) {
+                    grid[next[0]][next[1]] = '0';
+                    qu.push(next);
+                } 
             }
-            if(getAbove(d,grid) == '1') {
-                c.i = d.i - 1;
-                c.j = d.j;
-                grid[c.i][c.j] = '0';
-                myqueue.push(c);
-            }
-            if(getBelow(d,grid) == '1') {
-                c.i = d.i + 1;
-                c.j = d.j;
-                grid[c.i][c.j] = '0';
-                myqueue.push(c);
-            }
-            if(getRight(d,grid) == '1') {
-                c.i = d.i;
-                c.j = d.j + 1;
-                grid[c.i][c.j] = '0';
-                myqueue.push(c);
-            }
-            
-            
         }
-        
-        
+    }
+    void dfs(vector<vector<char>> & grid, int i, int j) {
+        vector<int> curr{i,j};
+        if(!validateCoords(curr, grid)) return;
+        grid[i][j] = '0';
+        for(vector<int> dir: dirs) {
+            vector<int> next = goInDir(curr, dir);
+            dfs(grid, next[0], next[1]);
+        }
+    }
+    vector<int> goInDir(vector<int>& coord, vector<int> &dir) {
+        return {coord[0] + dir[0], coord[1] + dir[1]};
     }
 };
